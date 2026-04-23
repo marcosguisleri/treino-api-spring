@@ -2,8 +2,8 @@
 
 > API REST para gerenciamento de treinos e exercícios de academia, desenvolvida com Spring Boot.
 
-![Java](https://img.shields.io/badge/Java-17-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white)
-![Spring Boot](https://img.shields.io/badge/Spring_Boot-3.x-6DB33F?style=for-the-badge&logo=spring-boot&logoColor=white)
+![Java](https://img.shields.io/badge/Java-25-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white)
+![Spring Boot](https://img.shields.io/badge/Spring_Boot-4.0.5-6DB33F?style=for-the-badge&logo=spring-boot&logoColor=white)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-316192?style=for-the-badge&logo=postgresql&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
 ![Maven](https://img.shields.io/badge/Maven-C71A36?style=for-the-badge&logo=apache-maven&logoColor=white)
@@ -22,40 +22,42 @@ O projeto está sendo desenvolvido ao longo de uma pós-graduação em desenvolv
 ## 🗂️ Modelagem do banco de dados
 
 ```
-tb_alunos         tb_treinos              tb_treino_exercicios     tb_exercicios
-─────────         ──────────              ────────────────────     ─────────────
+tb_alunos         tb_treinos              tb_treino_exercicio      tb_exercicios
+─────────         ──────────              ───────────────────      ─────────────
 id           ←── aluno_id (FK)      ┌─── treino_id (FK)           id
 nome             id              ───┤    id                    ───→ nome
 dta_nascimento   nome               └─── exercicio_id (FK)         grupo_muscular
-dta_matricula    dias_semana              series
+dta_matricula    dias_semana*             series
 status                                   repeticoes
                                          ordem
+
+* dias_semana armazenado em tb_treino_dias via @ElementCollection
 ```
 
 **Relacionamentos:**
 - `tb_alunos` → `tb_treinos` — Um aluno pode ter vários treinos **(1:N)**
-- `tb_treinos` ↔ `tb_exercicios` — Um treino tem vários exercícios e um exercício pode aparecer em vários treinos **(N:M)**, resolvido via `tb_treino_exercicios`
+- `tb_treinos` ↔ `tb_exercicios` — Um treino tem vários exercícios e um exercício pode aparecer em vários treinos **(N:M)**, resolvido via `tb_treino_exercicio`
 
 ---
 
 ## 🚀 Tecnologias utilizadas
 
-| Tecnologia | Finalidade |
-|---|---|
-| Java 17 | Linguagem principal |
-| Spring Boot 3.x | Framework principal |
-| Spring Data JPA | Mapeamento objeto-relacional |
-| Spring Validation | Validação de requisições |
-| PostgreSQL 16 | Banco de dados relacional |
-| Docker + Docker Compose | Ambiente de banco de dados local |
-| Lombok | Redução de boilerplate |
-| Maven | Gerenciamento de dependências |
+| Tecnologia | Versão | Finalidade |
+|---|---|---|
+| Java | 25 | Linguagem principal |
+| Spring Boot | 4.0.5 | Framework principal |
+| Spring Data JPA | — | Mapeamento objeto-relacional |
+| SpringDoc OpenAPI | 3.0.2 | Documentação automática (Swagger UI) |
+| PostgreSQL | 16 | Banco de dados relacional |
+| Docker + Docker Compose | — | Ambiente de banco de dados local |
+| Lombok | — | Redução de boilerplate |
+| Maven | 3.8+ | Gerenciamento de dependências |
 
 ---
 
 ## ⚙️ Pré-requisitos
 
-- [Java 17+](https://adoptium.net/)
+- [Java 25+](https://adoptium.net/)
 - [Docker Desktop](https://www.docker.com/products/docker-desktop/)
 - [Maven 3.8+](https://maven.apache.org/)
 - [IntelliJ IDEA](https://www.jetbrains.com/idea/) (recomendado)
@@ -69,6 +71,11 @@ O banco de dados roda via Docker. Com o Docker Desktop aberto, execute na raiz d
 ```bash
 docker-compose up -d
 ```
+
+Isso irá subir um container PostgreSQL 16 com:
+- **Banco:** `db_treino`
+- **Porta:** `5432`
+- **Volume persistente:** `postgres_data`
 
 Para parar:
 
@@ -93,9 +100,9 @@ spring.datasource.password=${DB_PASSWORD}
 Crie um arquivo `application-local.properties` na mesma pasta (já ignorado pelo `.gitignore`) com suas credenciais reais:
 
 ```properties
-spring.datasource.url=jdbc:postgresql://localhost:5432/fitflow
-spring.datasource.username=seu_usuario
-spring.datasource.password=sua_senha
+spring.datasource.url=jdbc:postgresql://localhost:5432/db_treino
+spring.datasource.username=postgres
+spring.datasource.password=postgres
 ```
 
 Nas configurações de execução do IntelliJ, ative o profile `local`:
@@ -114,27 +121,41 @@ mvn spring-boot:run
 
 A API estará disponível em `http://localhost:8080`.
 
+A documentação Swagger estará disponível em `http://localhost:8080/swagger-ui.html`.
+
 ---
 
 ## 📁 Estrutura do projeto
 
 ```
 src/main/java/br/dev/guisleri/treinoapispring/
-├── controller/       # Endpoints REST
-├── dto/              # Objetos de transferência de dados (request e response)
-│   ├── request/
-│   └── response/
-├── model/            # Entidades JPA
-│   └── enums/        # Enumerações (GrupoMuscular, DiaSemana)
-├── repository/       # Interfaces Spring Data JPA
+├── model/            # Entidades JPA e enums
+│   ├── Aluno.java
+│   ├── Treino.java
+│   ├── Exercicio.java
+│   ├── TreinoExercicio.java
+│   ├── DiasSemana.java       # Enum
+│   └── GrupoMuscular.java    # Enum
+├── repo/             # Interfaces Spring Data JPA
+│   ├── AlunoRepo.java
+│   ├── TreinoRepo.java
+│   ├── ExercicioRepo.java
+│   └── TreinoExercicioRepo.java
 └── service/          # Regras de negócio
+    ├── IAlunoService.java
+    ├── ITreinoService.java
+    ├── IExercicioService.java
+    ├── ITreinoExercicioService.java
+    └── TreinoService.java    # Implementado
 ```
+
+> **Em desenvolvimento:** as camadas `controller/` e `dto/` serão adicionadas nas próximas etapas.
 
 ---
 
 ## 🔗 Endpoints
 
-> Em construção. A documentação completa via Swagger será adicionada em breve.
+> Em construção. Os endpoints abaixo representam o planejamento da API. A documentação completa via Swagger será adicionada ao longo do desenvolvimento.
 
 | Método | Rota | Descrição |
 |---|---|---|
@@ -144,7 +165,10 @@ src/main/java/br/dev/guisleri/treinoapispring/
 | `PUT` | `/alunos/{id}` | Atualizar aluno |
 | `DELETE` | `/alunos/{id}` | Remover aluno |
 | `POST` | `/treinos` | Cadastrar treino |
+| `GET` | `/treinos` | Listar treinos |
 | `GET` | `/treinos/{id}` | Buscar treino com exercícios |
+| `PUT` | `/treinos/{id}` | Atualizar treino |
+| `DELETE` | `/treinos/{id}` | Remover treino |
 | `POST` | `/exercicios` | Cadastrar exercício |
 | `GET` | `/exercicios` | Listar exercícios |
 
@@ -154,9 +178,10 @@ src/main/java/br/dev/guisleri/treinoapispring/
 
 - Conventional Commits para padronização do histórico Git
 - Configuração segura com separação de credenciais via Spring Profiles
-- DTOs separados por responsabilidade (request / response)
-- Enums para valores controlados (`GrupoMuscular`, `DiaSemana`)
-- Entidade associativa para relacionamentos N:M com atributos extras
+- Enums para valores controlados (`GrupoMuscular`, `DiasSemana`)
+- Entidade associativa para relacionamentos N:M com atributos extras (`TreinoExercicio`)
+- Interfaces de serviço separadas da implementação (contrato x implementação)
+- Documentação automática via SpringDoc OpenAPI (Swagger UI)
 
 ---
 
