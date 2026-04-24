@@ -4,6 +4,7 @@ import br.dev.guisleri.treinoapispring.dto.ExercicioRequestDTO;
 import br.dev.guisleri.treinoapispring.dto.ExercicioResponseDTO;
 import br.dev.guisleri.treinoapispring.model.Exercicio;
 import br.dev.guisleri.treinoapispring.service.ExercicioService;
+
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

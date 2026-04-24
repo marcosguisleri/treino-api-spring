@@ -1,5 +1,6 @@
 package br.dev.guisleri.treinoapispring.service;
 
+import br.dev.guisleri.treinoapispring.dto.TreinoExercicioRequestDTO;
 import br.dev.guisleri.treinoapispring.exception.TreinoExercicioNotFoundException;
 import br.dev.guisleri.treinoapispring.model.Exercicio;
 import br.dev.guisleri.treinoapispring.model.Treino;
@@ -12,25 +13,25 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class TreinoExercicioService implements ITreinoExercicio{
+public class TreinoExercicioService implements ITreinoExercicioService {
 
     private final TreinoExercicioRepo treinoExercicioRepo;
     private final TreinoService treinoService;
     private final ExercicioService exercicioService;
 
     @Override
-    public TreinoExercicio save(Long treinoId, Long exercicioId, Integer series, Integer repeticoes, Integer ordem) {
-        Treino treino = treinoService.findById(treinoId);
-        Exercicio exercicio = exercicioService.findById(exercicioId);
+    public TreinoExercicio save(TreinoExercicioRequestDTO dto) {
+        Treino treino = treinoService.findById(dto.treinoId());
+        Exercicio exercicio = exercicioService.findById(dto.exercicioId());
 
-        TreinoExercicio treinoExercicio = new TreinoExercicio();
-        treinoExercicio.setTreino(treino);
-        treinoExercicio.setExercicio(exercicio);
-        treinoExercicio.setSeries(series);
-        treinoExercicio.setRepeticoes(repeticoes);
-        treinoExercicio.setOrdem(ordem);
+        TreinoExercicio te = new TreinoExercicio();
+        te.setTreino(treino);
+        te.setExercicio(exercicio);
+        te.setSeries(dto.series());
+        te.setRepeticoes(dto.repeticoes());
+        te.setOrdem(dto.ordem());
 
-        return treinoExercicioRepo.save(treinoExercicio);
+        return treinoExercicioRepo.save(te);
     }
 
     @Override
@@ -40,8 +41,14 @@ public class TreinoExercicioService implements ITreinoExercicio{
     }
 
     @Override
-    public TreinoExercicio update(Long id, Integer series, Integer repeticoes, Integer ordem) {
-        return null;
+    public TreinoExercicio update(Long id, TreinoExercicioRequestDTO dto) {
+        TreinoExercicio te = findById(id);
+
+        te.setSeries(dto.series());
+        te.setRepeticoes(dto.repeticoes());
+        te.setOrdem(dto.ordem());
+
+        return treinoExercicioRepo.save(te);
     }
 
     @Override
