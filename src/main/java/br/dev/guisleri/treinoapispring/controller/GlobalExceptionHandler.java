@@ -5,6 +5,7 @@ import br.dev.guisleri.treinoapispring.exception.AlunoNotFoundException;
 import br.dev.guisleri.treinoapispring.exception.ExercicioNotFoundException;
 import br.dev.guisleri.treinoapispring.exception.TreinoExercicioNotFoundException;
 import br.dev.guisleri.treinoapispring.exception.TreinoNotFoundException;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
