@@ -1,6 +1,6 @@
 package br.dev.guisleri.treinoapispring.service;
 
-import br.dev.guisleri.treinoapispring.exception.TreinoExercicioNaoEncontrado;
+import br.dev.guisleri.treinoapispring.exception.TreinoExercicioNotFoundException;
 import br.dev.guisleri.treinoapispring.model.Exercicio;
 import br.dev.guisleri.treinoapispring.model.Treino;
 import br.dev.guisleri.treinoapispring.model.TreinoExercicio;
@@ -36,7 +36,7 @@ public class TreinoExercicioService implements ITreinoExercicio{
     @Override
     public TreinoExercicio findById(Long id) {
         return treinoExercicioRepo.findById(id)
-                .orElseThrow(() -> new TreinoExercicioNaoEncontrado("TreinoExercicio not found! | ID: " + id));
+                .orElseThrow(() -> new TreinoExercicioNotFoundException("TreinoExercicio not found! | ID: " + id));
     }
 
     @Override

@@ -1,6 +1,6 @@
 package br.dev.guisleri.treinoapispring.service;
 
-import br.dev.guisleri.treinoapispring.exception.AlunoNaoEncontrado;
+import br.dev.guisleri.treinoapispring.exception.AlunoNotFoundException;
 import br.dev.guisleri.treinoapispring.model.Aluno;
 import br.dev.guisleri.treinoapispring.repo.AlunoRepo;
 import lombok.RequiredArgsConstructor;
@@ -25,13 +25,13 @@ public class AlunoService implements IAlunoService {
     @Override
     public Aluno findById(Long id) {
         return alunoRepo.findById(id)
-                .orElseThrow(() -> new AlunoNaoEncontrado("Aluno not found! | ID: " + id));
+                .orElseThrow(() -> new AlunoNotFoundException("Aluno not found! | ID: " + id));
     }
 
     @Override
     public Aluno update(Long id, Aluno aluno) {
         Aluno alunoExistente = alunoRepo.findById(id)
-                .orElseThrow(() -> new AlunoNaoEncontrado("Aluno not found! | ID: " + id));
+                .orElseThrow(() -> new AlunoNotFoundException("Aluno not found! | ID: " + id));
 
         alunoExistente.setNome(aluno.getNome());
         alunoExistente.setDataNascimento(aluno.getDataNascimento());
