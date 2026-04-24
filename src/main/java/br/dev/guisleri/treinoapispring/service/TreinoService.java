@@ -1,5 +1,7 @@
 package br.dev.guisleri.treinoapispring.service;
 
+import br.dev.guisleri.treinoapispring.exception.AlunoNaoEncontrado;
+import br.dev.guisleri.treinoapispring.exception.TreinoNaoEncontrado;
 import br.dev.guisleri.treinoapispring.model.Aluno;
 import br.dev.guisleri.treinoapispring.model.Treino;
 import br.dev.guisleri.treinoapispring.repo.AlunoRepo;
@@ -23,18 +25,18 @@ public class TreinoService implements ITreinoService {
 
     @Override
     public Treino findById(Long id) {
-        return treinoRepo.findById(id).orElseThrow(() -> new RuntimeException("Treino not found! | ID: " + id));
+        return treinoRepo.findById(id).orElseThrow(() -> new TreinoNaoEncontrado("Treino not found! | ID: " + id));
     }
 
     @Override
     public Treino update(Long id, Long AlunoId, Treino treino) {
         Treino treinoExistente = treinoRepo.findById(id)
-                .orElseThrow(() -> new RuntimeException("Treino not found! | ID: " + id));
+                .orElseThrow(() -> new TreinoNaoEncontrado("Treino not found! | ID: " + id));
 
         treinoExistente.setNome(treino.getNome());
 
         Aluno alunoExistente = alunoRepo.findById(AlunoId)
-                .orElseThrow(() -> new RuntimeException("Aluno not found! | ID: " + AlunoId));
+                .orElseThrow(() -> new AlunoNaoEncontrado("Aluno not found! | ID: " + AlunoId));
 
         treinoExistente.setAluno(alunoExistente);
 

@@ -1,5 +1,6 @@
 package br.dev.guisleri.treinoapispring.service;
 
+import br.dev.guisleri.treinoapispring.exception.ExercicioNaoEncontrado;
 import br.dev.guisleri.treinoapispring.model.Exercicio;
 import br.dev.guisleri.treinoapispring.repo.ExercicioRepo;
 import lombok.RequiredArgsConstructor;
@@ -20,13 +21,13 @@ public class ExercicioService implements IExercicioService {
 
     @Override
     public Exercicio findById(Long id) {
-        return exercicioRepo.findById(id).orElseThrow(() -> new RuntimeException("Exercicio not found! | ID: " + id));
+        return exercicioRepo.findById(id).orElseThrow(() -> new ExercicioNaoEncontrado("Exercicio not found! | ID: " + id));
     }
 
     @Override
     public Exercicio update(Long id, Exercicio exercicio) {
         Exercicio exercicioExistente = exercicioRepo.findById(id)
-                .orElseThrow(() -> new RuntimeException("Exercicio not found! | ID: " + id));
+                .orElseThrow(() -> new ExercicioNaoEncontrado("Exercicio not found! | ID: " + id));
 
         exercicioExistente.setNome(exercicio.getNome());
         exercicioExistente.setGrupoMuscular(exercicio.getGrupoMuscular());
