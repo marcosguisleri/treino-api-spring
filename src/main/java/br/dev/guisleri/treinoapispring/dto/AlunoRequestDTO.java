@@ -1,0 +1,14 @@
+package br.dev.guisleri.treinoapispring.dto;
+
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
+import java.time.LocalDate;
+
+public record AlunoRequestDTO(
+        @NotBlank
+        String nome,
+        @NotNull
+        LocalDate dataNascimento
+) {
+}

@@ -6,6 +6,7 @@ import br.dev.guisleri.treinoapispring.repo.AlunoRepo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -16,6 +17,8 @@ public class AlunoService implements IAlunoService {
 
     @Override
     public Aluno save(Aluno aluno) {
+        aluno.setDataMatricula(LocalDate.now());
+        aluno.setAtivo(true);
         return alunoRepo.save(aluno);
     }
 
