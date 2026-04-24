@@ -35,8 +35,6 @@ public class AlunoService implements IAlunoService {
 
         alunoExistente.setNome(aluno.getNome());
         alunoExistente.setDataNascimento(aluno.getDataNascimento());
-        alunoExistente.setDataMatricula(aluno.getDataMatricula());
-        alunoExistente.setAtivo(aluno.isAtivo());
 
         return alunoRepo.save(alunoExistente);
     }
