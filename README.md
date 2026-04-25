@@ -1,192 +1,243 @@
-# 💪 FitFlow API
+<p align="center">
+  <img src="docs/capa.png" alt="FitFlow Banner" width="100%"/>
+</p>
 
-> API REST para gerenciamento de treinos e exercícios de academia, desenvolvida com Spring Boot.
-
-![Java](https://img.shields.io/badge/Java-25-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white)
-![Spring Boot](https://img.shields.io/badge/Spring_Boot-4.0.5-6DB33F?style=for-the-badge&logo=spring-boot&logoColor=white)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-316192?style=for-the-badge&logo=postgresql&logoColor=white)
-![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
-![Maven](https://img.shields.io/badge/Maven-C71A36?style=for-the-badge&logo=apache-maven&logoColor=white)
-![Status](https://img.shields.io/badge/Status-Em%20desenvolvimento-yellow?style=for-the-badge)
-
----
-
-## 📋 Sobre o projeto
-
-O **FitFlow** é uma API REST desenvolvida como projeto de estudo para o gerenciamento de treinos de academia. A proposta é permitir que alunos tenham seus treinos organizados com nome, exercícios, séries, repetições e dias da semana, eliminando a confusão de papéis e fichas físicas.
-
-O projeto está sendo desenvolvido ao longo de uma pós-graduação em desenvolvimento backend com foco na stack Java, aplicando boas práticas de mercado desde a modelagem do banco até a arquitetura da API.
+<p align="center">
+  <img src="https://img.shields.io/badge/Java-17-orange?style=for-the-badge&logo=openjdk&logoColor=white"/>
+  <img src="https://img.shields.io/badge/Spring%20Boot-3.x-6DB33F?style=for-the-badge&logo=springboot&logoColor=white"/>
+  <img src="https://img.shields.io/badge/MySQL-8.0-4479A1?style=for-the-badge&logo=mysql&logoColor=white"/>
+  <img src="https://img.shields.io/badge/Docker-Compose-2496ED?style=for-the-badge&logo=docker&logoColor=white"/>
+  <img src="https://img.shields.io/badge/Swagger-UI-85EA2D?style=for-the-badge&logo=swagger&logoColor=black"/>
+</p>
 
 ---
 
-## 🗂️ Modelagem do banco de dados
+## 📖 Sobre o Projeto
+
+**FitFlow** é uma API REST desenvolvida em Java com Spring Boot para gerenciamento de treinos em academias. O sistema permite cadastrar alunos, montar fichas de exercícios e organizar treinos por dias da semana.
+
+O projeto foi desenvolvido como estudo prático de Spring Boot, aplicando boas práticas de arquitetura em camadas, DTOs, tratamento de exceções e configuração segura de credenciais.
+
+---
+
+## ✨ Funcionalidades
+
+- ✅ Cadastro, listagem, atualização e exclusão de **Alunos**
+- ✅ Cadastro, listagem, atualização e exclusão de **Exercícios** por grupo muscular
+- ✅ Criação e gerenciamento de **Treinos** com dias da semana configuráveis
+- ✅ Associação de exercícios a treinos com séries, repetições e ordem (**TreinoExercício**)
+- ✅ Validação de dados com Bean Validation
+- ✅ Tratamento global de exceções com respostas padronizadas
+- ✅ Documentação interativa via Swagger UI
+
+---
+
+## 🛠️ Tecnologias
+
+| Tecnologia | Descrição |
+|---|---|
+| Java 17 | Linguagem principal |
+| Spring Boot 3.x | Framework backend |
+| Spring Data JPA | Persistência e mapeamento ORM |
+| Hibernate | Implementação JPA |
+| MySQL 8.0 | Banco de dados relacional |
+| Docker + Docker Compose | Containerização do banco de dados |
+| Lombok | Redução de boilerplate |
+| Bean Validation | Validação de DTOs |
+| Springdoc OpenAPI | Documentação Swagger UI |
+| Maven | Gerenciamento de dependências |
+
+---
+
+## 🗂️ Estrutura do Projeto
 
 ```
-tb_alunos         tb_treinos              tb_treino_exercicio      tb_exercicios
-─────────         ──────────              ───────────────────      ─────────────
-id           ←── aluno_id (FK)      ┌─── treino_id (FK)           id
-nome             id              ───┤    id                    ───→ nome
-dta_nascimento   nome               └─── exercicio_id (FK)         grupo_muscular
-dta_matricula    dias_semana*             series
-status                                   repeticoes
-                                         ordem
-
-* dias_semana armazenado em tb_treino_dias via @ElementCollection
+src/main/java/br/dev/guisleri/treinoapispring/
+├── controller/       # Endpoints REST e GlobalExceptionHandler
+├── service/          # Regras de negócio e interfaces de serviço
+├── repo/             # Interfaces de repositório (Spring Data JPA)
+├── model/            # Entidades JPA e Enums
+├── dto/              # DTOs de request e response
+└── exception/        # Exceções customizadas
 ```
 
-**Relacionamentos:**
-- `tb_alunos` → `tb_treinos` — Um aluno pode ter vários treinos **(1:N)**
-- `tb_treinos` ↔ `tb_exercicios` — Um treino tem vários exercícios e um exercício pode aparecer em vários treinos **(N:M)**, resolvido via `tb_treino_exercicio`
+---
+
+## 🗃️ Modelo de Dados
+
+```
+Aluno (tb_alunos)
+  └── Treino (tb_treinos)          [N Treinos para 1 Aluno]
+        └── TreinoExercicio        [N Exercícios por Treino]
+              └── Exercicio (tb_exercicios)
+
+tb_treino_dias                     [dias da semana do treino]
+```
+
+### Enums disponíveis
+
+**GrupoMuscular:** `PEITO` `COSTAS` `PERNAS` `OMBROS` `BICEPS` `TRICEPS` `ABDOMEN`
+
+**DiasSemana:** `SEGUNDA` `TERCA` `QUARTA` `QUINTA` `SEXTA` `SABADO` `DOMINGO`
 
 ---
 
-## 🚀 Tecnologias utilizadas
+## 🚀 Como Executar
 
-| Tecnologia | Versão | Finalidade |
-|---|---|---|
-| Java | 25 | Linguagem principal |
-| Spring Boot | 4.0.5 | Framework principal |
-| Spring Data JPA | — | Mapeamento objeto-relacional |
-| SpringDoc OpenAPI | 3.0.2 | Documentação automática (Swagger UI) |
-| PostgreSQL | 16 | Banco de dados relacional |
-| Docker + Docker Compose | — | Ambiente de banco de dados local |
-| Lombok | — | Redução de boilerplate |
-| Maven | 3.8+ | Gerenciamento de dependências |
+### Pré-requisitos
 
----
+- Java 17+
+- Maven
+- Docker Desktop com WSL 2 (Windows) ou Docker Engine (Linux/Mac)
 
-## ⚙️ Pré-requisitos
-
-- [Java 25+](https://adoptium.net/)
-- [Docker Desktop](https://www.docker.com/products/docker-desktop/)
-- [Maven 3.8+](https://maven.apache.org/)
-- [IntelliJ IDEA](https://www.jetbrains.com/idea/) (recomendado)
-
----
-
-## 🐳 Subindo o banco de dados
-
-O banco de dados roda via Docker. Com o Docker Desktop aberto, execute na raiz do projeto:
+### 1. Clone o repositório
 
 ```bash
-docker-compose up -d
+git clone https://github.com/seu-usuario/treino-api-spring.git
+cd treino-api-spring
 ```
 
-Isso irá subir um container PostgreSQL 16 com:
-- **Banco:** `db_treino`
-- **Porta:** `5432`
-- **Volume persistente:** `postgres_data`
-
-Para parar:
+### 2. Suba o banco de dados com Docker
 
 ```bash
-docker-compose down
+docker compose up -d
 ```
 
----
+### 3. Configure as credenciais locais
 
-## 🔧 Configuração local
-
-O projeto usa o padrão de duas camadas de configuração para proteger credenciais.
-
-O arquivo `application.properties` contém os placeholders:
+Crie o arquivo `src/main/resources/application-local.properties` (já ignorado pelo Git):
 
 ```properties
-spring.datasource.url=${DB_URL}
-spring.datasource.username=${DB_USERNAME}
-spring.datasource.password=${DB_PASSWORD}
+spring.datasource.url=jdbc:mysql://localhost:3306/fitflow
+spring.datasource.username=seu_usuario
+spring.datasource.password=sua_senha
 ```
 
-Crie um arquivo `application-local.properties` na mesma pasta (já ignorado pelo `.gitignore`) com suas credenciais reais:
+### 4. Execute a aplicação com o perfil local
 
-```properties
-spring.datasource.url=jdbc:postgresql://localhost:5432/db_treino
-spring.datasource.username=postgres
-spring.datasource.password=postgres
-```
-
-Nas configurações de execução do IntelliJ, ative o profile `local`:
+No IntelliJ IDEA, adicione nas configurações de execução:
 
 ```
 Active profiles: local
 ```
 
----
-
-## ▶️ Executando o projeto
+Ou via terminal:
 
 ```bash
-mvn spring-boot:run
+mvn spring-boot:run -Dspring-boot.run.profiles=local
 ```
 
-A API estará disponível em `http://localhost:8080`.
+### 5. Acesse a documentação
 
-A documentação Swagger estará disponível em `http://localhost:8080/swagger-ui.html`.
+```
+http://localhost:8080/swagger-ui.html
+```
 
 ---
 
-## 📁 Estrutura do projeto
+## 📋 Endpoints
 
-```
-src/main/java/br/dev/guisleri/treinoapispring/
-├── model/            # Entidades JPA e enums
-│   ├── Aluno.java
-│   ├── Treino.java
-│   ├── Exercicio.java
-│   ├── TreinoExercicio.java
-│   ├── DiasSemana.java       # Enum
-│   └── GrupoMuscular.java    # Enum
-├── repo/             # Interfaces Spring Data JPA
-│   ├── AlunoRepo.java
-│   ├── TreinoRepo.java
-│   ├── ExercicioRepo.java
-│   └── TreinoExercicioRepo.java
-└── service/          # Regras de negócio
-    ├── IAlunoService.java
-    ├── ITreinoService.java
-    ├── IExercicioService.java
-    ├── ITreinoExercicioService.java
-    └── TreinoService.java    # Implementado
-```
+### Alunos — `/alunos`
 
-> **Em desenvolvimento:** as camadas `controller/` e `dto/` serão adicionadas nas próximas etapas.
-
----
-
-## 🔗 Endpoints
-
-> Em construção. Os endpoints abaixo representam o planejamento da API. A documentação completa via Swagger será adicionada ao longo do desenvolvimento.
-
-| Método | Rota | Descrição |
+| Método | Endpoint | Descrição |
 |---|---|---|
-| `POST` | `/alunos` | Cadastrar aluno |
-| `GET` | `/alunos` | Listar alunos |
-| `GET` | `/alunos/{id}` | Buscar aluno por ID |
-| `PUT` | `/alunos/{id}` | Atualizar aluno |
-| `DELETE` | `/alunos/{id}` | Remover aluno |
-| `POST` | `/treinos` | Cadastrar treino |
-| `GET` | `/treinos` | Listar treinos |
-| `GET` | `/treinos/{id}` | Buscar treino com exercícios |
-| `PUT` | `/treinos/{id}` | Atualizar treino |
-| `DELETE` | `/treinos/{id}` | Remover treino |
-| `POST` | `/exercicios` | Cadastrar exercício |
-| `GET` | `/exercicios` | Listar exercícios |
+| GET | `/alunos` | Lista todos os alunos |
+| GET | `/alunos/{id}` | Busca aluno por ID |
+| POST | `/alunos` | Cria novo aluno |
+| PUT | `/alunos/{id}` | Atualiza aluno |
+| DELETE | `/alunos/{id}` | Remove aluno por ID |
+| DELETE | `/alunos` | Remove todos os alunos |
+
+### Exercícios — `/exercicios`
+
+| Método | Endpoint | Descrição |
+|---|---|---|
+| GET | `/exercicios` | Lista todos os exercícios |
+| GET | `/exercicios/{id}` | Busca exercício por ID |
+| POST | `/exercicios` | Cria novo exercício |
+| PUT | `/exercicios/{id}` | Atualiza exercício |
+| DELETE | `/exercicios/{id}` | Remove exercício por ID |
+
+### Treinos — `/treinos`
+
+| Método | Endpoint | Descrição |
+|---|---|---|
+| GET | `/treinos` | Lista todos os treinos |
+| GET | `/treinos/{id}` | Busca treino por ID |
+| POST | `/treinos` | Cria novo treino |
+| PUT | `/treinos/{id}` | Atualiza treino |
+| DELETE | `/treinos/{id}` | Remove treino por ID |
+
+### Treino Exercícios — `/treino-exercicios`
+
+| Método | Endpoint | Descrição |
+|---|---|---|
+| GET | `/treino-exercicios` | Lista todas as associações |
+| GET | `/treino-exercicios/{id}` | Busca por ID |
+| POST | `/treino-exercicios` | Associa exercício a treino |
+| PUT | `/treino-exercicios/{id}` | Atualiza associação |
+| DELETE | `/treino-exercicios/{id}` | Remove associação |
 
 ---
 
-## 📌 Boas práticas aplicadas
+## 📦 Exemplos de Request
 
-- Conventional Commits para padronização do histórico Git
-- Configuração segura com separação de credenciais via Spring Profiles
-- Enums para valores controlados (`GrupoMuscular`, `DiasSemana`)
-- Entidade associativa para relacionamentos N:M com atributos extras (`TreinoExercicio`)
-- Interfaces de serviço separadas da implementação (contrato x implementação)
-- Documentação automática via SpringDoc OpenAPI (Swagger UI)
+### Criar Aluno
+```json
+POST /alunos
+{
+  "nome": "Carlos Silva",
+  "dataNascimento": "1995-03-15"
+}
+```
+
+### Criar Exercício
+```json
+POST /exercicios
+{
+  "nome": "Supino Reto",
+  "grupoMuscular": "PEITO"
+}
+```
+
+### Criar Treino
+```json
+POST /treinos
+{
+  "nome": "Treino A - Peito e Tríceps",
+  "alunoId": 1,
+  "diasSemana": ["SEGUNDA", "QUINTA"]
+}
+```
+
+### Adicionar Exercício ao Treino
+```json
+POST /treino-exercicios
+{
+  "treinoId": 1,
+  "exercicioId": 1,
+  "series": 4,
+  "repeticoes": 12,
+  "ordem": 1
+}
+```
+
+---
+
+## 🔒 Boas Práticas Aplicadas
+
+- **Configuração segura:** credenciais nunca versionadas — uso de `${PLACEHOLDER}` no `application.properties` e arquivo `application-local.properties` ignorado pelo Git
+- **Perfis Spring Boot:** separação entre configuração de desenvolvimento e produção via profiles
+- **Camadas bem definidas:** controller → service → repository, cada uma com responsabilidade única
+- **DTOs de request/response:** a entidade JPA nunca é exposta diretamente na API
+- **Exceções customizadas:** cada entidade tem sua própria exceção tipada com tratamento global via `@RestControllerAdvice`
+- **Conventional Commits:** histórico de commits padronizado e legível
 
 ---
 
 ## 👨‍💻 Autor
 
-Desenvolvido por **Marcos Guisleri** como projeto de estudo durante a pós-graduação em desenvolvimento backend.
+Desenvolvido por **Marcos Guisleri**
 
-[![GitHub](https://img.shields.io/badge/GitHub-guisleri-181717?style=flat-square&logo=github)](https://github.com/guisleri)
+[![GitHub](https://img.shields.io/badge/GitHub-seu--usuario-181717?style=for-the-badge&logo=github)](https://github.com/seu-usuario)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Marcos%20Guisleri-0A66C2?style=for-the-badge&logo=linkedin)](https://linkedin.com/in/seu-perfil)
